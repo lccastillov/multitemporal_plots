@@ -1,16 +1,19 @@
 ## Desription of the input sample files
 +plots_age.csv
+Provide info for each plot ath the moment when Sentinel2 images are retrieved. Is has the following fields:
 
-    -Id_MT:
-    -Id_MTL	Id_M:
-    -IDLote	Phenology:
-    -Ini_Campana:
-    -Fin_Campana:
-    -Phenology_crop:
-    -Image_date:
-    -age:
-    -Campana:
-    -Week_Ini_Campana:
-    -Week_Fin_campana:
-    -Month_Ini_Campana:
-    -Yield:
+    -Id_MT: Modulo + Turno
+    -Id_MTL: Modulo + Turno + Lote
+    -Id_M: Module
+    -IDLote: Lote
+    -Phenology: Plot phenological stage at the moment when the image is acquired
+    -Ini_Campana: Start of season date
+    -Fin_Campana: End of season date
+    -Phenology_crop: Crop type (e.g. green asparagus)
+    -Image_date: Satellite image data
+    -age: Plot age when the satellite image was acquired
+    -Campana: Campana of the plot when the image is acquired
+    -Week_Ini_Campana: Week in the year when the season starts
+    -Week_Fin_campana:Week in the year when the season ends
+    -Month_Ini_Campana: Month in which the season starts
+    -Yield: Yield plot when harvested

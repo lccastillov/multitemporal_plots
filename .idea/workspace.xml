@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cfc51795-a38b-4b5f-96cc-807eaa787afe" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Multi_temporal_monitoring.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/functions_multitemporal_monitoring.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input_files_description" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Multi_temporal_monitoring.py" beforeDir="false" afterPath="$PROJECT_DIR$/Multi_temporal_monitoring.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functions_multitemporal_monitoring.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions_multitemporal_monitoring.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input_files_description" beforeDir="false" afterPath="$PROJECT_DIR$/input_files_description" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -51,6 +51,14 @@
       <option name="presentableId" value="Default" />
       <updated>1620038384312</updated>
     </task>
+    <task id="LOCAL-00001" summary="Created files for main script, functions and files description">
+      <created>1620047600608</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1620047600608</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -63,5 +71,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Created files for main script, functions and files description" />
+    <option name="LAST_COMMIT_MESSAGE" value="Created files for main script, functions and files description" />
   </component>
 </project>
