@@ -1,0 +1,16 @@
+## Desription of the input sample files
++plots_age.csv
+
+    -Id_MT:
+    -Id_MTL	Id_M:
+    -IDLote	Phenology:
+    -Ini_Campana:
+    -Fin_Campana:
+    -Phenology_crop:
+    -Image_date:
+    -age:
+    -Campana:
+    -Week_Ini_Campana:
+    -Week_Fin_campana:
+    -Month_Ini_Campana:
+    -Yield:
