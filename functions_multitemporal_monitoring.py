@@ -246,10 +246,11 @@ def delete_outliers_iqr_day (df, column_name, day):
     return [indexNames]
 
 def fill_gaps(metrics_df, periodicity):
+    #Fills gaps using the mean
     if periodicity == "weekly":
-        metrics_df = metrics_df.set_index('week_campaign')
+        metrics_df = metrics_df.set_index('week_campaign').copy()
     elif periodicity == "daily":
-        metrics_df = metrics_df.set_index('age')
+        metrics_df = metrics_df.set_index('age').copy()
 
     # Filling using mean or median
     # Creating a column in the dataframe
@@ -257,8 +258,45 @@ def fill_gaps(metrics_df, periodicity):
     # df = df.assign(NewCol=default_value)
     # to avoid pandas warning.
 
+    # fill_mean is the column with the filled values
     metrics_df = metrics_df.assign(fill_mean=metrics_df.period_median.fillna(metrics_df.period_median. \
-                                                                             rolling(7, min_periods=1, ).mean()))
+                                                                             rolling(11, min_periods=1, ).mean()))
     #min_periods: Minimum number of observations in window required to have a value
     return[metrics_df]
+
+
+def std_approach_thresholds(metrics_df):
+
+    metrics_df['up_threshold'] = metrics_df['period_median_filter'] + metrics_df['std']
+    metrics_df['low_threshold'] = metrics_df['period_median_filter'] - metrics_df['std']
+
+    # More extreme thresholds
+    metrics_df['top_threshold'] = metrics_df['period_median_filter'] + 2.5 * metrics_df['std']
+    metrics_df['bottom_threshold'] = metrics_df['period_median_filter'] - 2.5 * metrics_df['std']
+
+    return [metrics_df]
+
+def plot_pattern_thresholds (metrics_df,vi):
+
+
+    #def plot_pattern_thresholds(x, y_median, y_median_filter, extreme_thres1, extreme_thres2, normal_thres1, normal_thres2, df_current):
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    metrics_df.reset_index(inplace=True)
+
+    plt.figure(figsize=(15, 6))
+    plt.title(vi+ " change over time")
+    plt.plot(metrics_df.age,metrics_df.period_median_filter, color='blue',label="Baseline")
+
+    #sns.scatterplot(x, y_median, data=weekly_stats_df, s=35)
+    plt.plot(metrics_df.age, metrics_df.up_threshold, color='green')
+    plt.plot(metrics_df.age, metrics_df.low_threshold, color='green')
+    plt.plot(metrics_df.age,metrics_df.top_threshold, color='orange')
+    plt.plot(metrics_df.age,metrics_df.bottom_threshold, color='orange')
+    plt.xlabel('Age', fontsize=14)
+    plt.ylabel('Median NDVI/plot', fontsize=14)
+    plt.legend()
+    ### TO plot points
+    #plt.scatter(df_current['week_campaign'], df_current['mean_vi'], data=df_current, s=35)
+    plt.show()
 

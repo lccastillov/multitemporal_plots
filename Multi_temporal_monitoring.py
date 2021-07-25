@@ -48,9 +48,10 @@ import matplotlib.pyplot as plt
 from numpy import genfromtxt
 import os
 import warnings
+import scipy.signal
 
 from functions_multitemporal_monitoring import *
-
+pd.set_option("display.max_columns", None)
 
 # Switch warnings off
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -61,10 +62,13 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 m_root='/data'
 input_files_folder=m_root+'/Danper_ES/input_files'
 s2_vi_list = ['NDVI8'] # List of VIs to be assessed
+final_exportplot=m_root+'/Danper_ES/ndvi.png'
 
 # Columns of dataframe that stores stats per day
 metrics_day_columns_df = [ 'age', 'vi', 'count', 'period_mean', 'period_median', 'std', 'low_thres', \
                           'up_thres', 'IQR', 'Q1', 'Q3']
+
+# Dataframe to store metrics
 daily_stats_df_total = pd.DataFrame( columns=metrics_day_columns_df)
 
 ## ---------------------------
@@ -96,7 +100,7 @@ indexNames =drop_sprouting.index
 df_age.drop(indexNames , inplace=True)
 
 ## ---------------------------
-## Yield stats
+## Yield metrics
 yield_min=df_age['Yield'].min()
 yield_max=df_age['Yield'].max()
 yield_median=df_age['Yield'].median()
@@ -114,17 +118,15 @@ yield_high_threshold=yield_median-0.5*yield_std
 
 max_day = 140
 
-# Maximum week to retrieve statistics of VIs.
+# Maximum week to retrieve statistics of VIs:
 # Identified as the latest week in which all plots have not been harvested yet
 # This, as the harvest might start eralier or later sometimes, this is the week in which,
-#for sure, al the plots are still in the filed (not harvested)
+#for sure, al the plots are still in the field (not harvested)
 
 max_week_campaign_duration=20
 min_vi = 0.3
 
-
 for vi in s2_vi_list:
-
 
     hdf5_file = m_root + '/Danper_ES/input_files/SEN2_HistoMetrics' + vi + '.hdf5' #hdf file with VI stats per plot
 
@@ -138,13 +140,14 @@ for vi in s2_vi_list:
     #Maximum crop age to include in the stats
     max_day = 150
 
-    df, = conditions_weeks(df) # Indicate the correspondent week for each day
+    df, = conditions_weeks(df) # Allocates the correspondent week for each day
 
     days_list = np.arange(1, max_day + 1)
 
     #############
 
-    # As we are creating the typical pattern, we include only the yields that are not outliers
+    # We include only the yields that are not outliers because we are creating the typical pattern
+    #df_nooutliers presentes the data only for those plots with "normal yields" (Not outliers)
     df_nooutliers, = df_no_yield_outliers(df, yield_low_threshold, yield_high_threshold, min_vi= \
         min_vi, max_week_campaign_duration=max_week_campaign_duration)
 
@@ -157,7 +160,6 @@ for vi in s2_vi_list:
         df.drop(indexNames, inplace=True)
 
 
-
     # Stats of daily data without outliers (from yield and mean_vi perspective)
     daily_stats_df_current, = daily_vi_statistics(df_nooutliers, max_day,vi,metrics_day_columns_df)
 
@@ -165,10 +167,34 @@ for vi in s2_vi_list:
     #Append stats for current day to main stats dataframe
     daily_stats_df_total = daily_stats_df_total.append(daily_stats_df_current)
 
-    # When less that 20 records per day, assign Null to period median
+    # When less that 5 records per day, assign Null to period median
     daily_stats_df_total['period_median'] = \
-        np.where(daily_stats_df_total['count'] < 5, np.nan, daily_stats_df_total['period_median'])
+        np.where(daily_stats_df_total['count'] < 4, np.nan, daily_stats_df_total['period_median'])
 
 
+    ## Fill gaps
     metrics_df,=fill_gaps(metrics_df=daily_stats_df_total, periodicity='daily')
+
+
+    ### Filter data using savitzky-golay
+
+    #metrics_df.fill_mean has the filtered ndvi values daily
+    period_median_filter = scipy.signal.savgol_filter(metrics_df.fill_mean,7, 3)  # window size 3, polynomial order 2
+    metrics_df['period_median_filter']=period_median_filter
+
+
+    #Get thresholds using sandard deviations critera
+    metrics_df,=std_approach_thresholds(metrics_df).copy()
+
+    print("mcolumns",metrics_df[['period_median','std','low_threshold','period_median_filter','up_threshold']].head(30))
+    ### Plot
+
+
+
+
+    ## Plot the mean values daily
+    plot_pattern_thresholds(metrics_df, vi)
+    #plt.show()
+    plt.savefig(final_exportplot , dpi=200)
+
 
