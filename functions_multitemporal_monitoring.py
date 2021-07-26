@@ -296,14 +296,14 @@ def iqr_approach_thresholds(metrics_df):
     metrics_df['bottom_threshold']=metrics_df['Q1']-1.5*metrics_df['IQR']
     return [metrics_df]
 
-def plot_pattern_thresholds (metrics_df,vi, method, plot_folder):
+def plot_pattern_thresholds (metrics_df,vi, plot_folder):
 
 
     #def plot_pattern_thresholds(x, y_median, y_median_filter, extreme_thres1, extreme_thres2, normal_thres1, normal_thres2, df_current):
     import matplotlib.pyplot as plt
     import seaborn as sns
     metrics_df.reset_index(inplace=True)
-    final_exportplot = plot_folder + '/pattern_' + str(method) + '_'+vi+'.png'
+    final_exportplot = plot_folder + '/pattern_' +vi+'.png'
 
     plt.figure(figsize=(15, 6))
     plt.title(vi+ " temporal pattern")

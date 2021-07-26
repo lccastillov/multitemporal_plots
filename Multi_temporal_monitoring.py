@@ -181,22 +181,12 @@ for vi in s2_vi_list:
     #metrics_df.fill_mean has the filtered ndvi values daily
     period_median_filter = scipy.signal.savgol_filter(metrics_df.fill_mean,7, 3)  # window size 3, polynomial order 2
     metrics_df['period_median_filter']=period_median_filter
-    method=input("If you want to use the standard deviation method type 'std', if you want to use the IQR method type 'iqr'")
 
-    if method =='std':
-        ## Fill the gaps for standard deviations
+    ## Fill the gaps for standard deviations
+    metrics_df['std'].fillna(value=metrics_df['std'].rolling(10, min_periods=1, ).mean(), inplace=True)
 
-        metrics_df['std'].fillna(value=metrics_df['std'].rolling(10, min_periods=1, ).mean(), inplace=True)
-
-        #Get thresholds using sandard deviations critera
-        metrics_df,=std_approach_thresholds(metrics_df).copy()
-    elif method=='iqr':
-
-        # Get thresholds using iqr approach
-        metrics_df,=iqr_approach_thresholds(metrics_df)
-    else:
-        print("You entered a wrong option")
-        quit()
+    #Get thresholds using sandard deviations critera
+    metrics_df,=std_approach_thresholds(metrics_df).copy()
 
 
     #print columns
@@ -206,7 +196,7 @@ for vi in s2_vi_list:
     metrics_df.to_csv(plot_folder+'/metrics_df.csv')
 
     ## Plot the mean values daily
-    plot_pattern_thresholds(metrics_df, vi, method,plot_folder)
+    plot_pattern_thresholds(metrics_df, vi, plot_folder)
 
 
 
