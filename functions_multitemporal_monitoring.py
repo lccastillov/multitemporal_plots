@@ -100,6 +100,8 @@ def daily_vi_statistics(df, max_day,vi,metrics_day_columns_df):
         count = df_current_day['normalmean_vi'].count()
         median = df_current_day['normalmean_vi'].median()
 
+
+
         df_non_outliers = df_current_day
         [(df_current_day.age >= min_thres) | (df_current_day.age <= max_thres)]
         # df_non_outliers=df_current_age[(df_current_age.age >= min_thres) & df_current_age(df_current_age.age <= max_thres)]
@@ -121,6 +123,7 @@ def daily_vi_statistics(df, max_day,vi,metrics_day_columns_df):
     # statistics_df_all_ages['age'] = statistics_df_all_ages['age'].astype(int)
     # If we want to record statistics into a csv file
     # statistics_df_all_ages.to_csv(m_root+'/Anomalies_interpretation/stats_'+s2_vi+'.csv', index=False)
+    #daily_stats_df['std'] = daily_stats_df['std'].astype(float).copy()
     return [daily_stats_df]
 
 def conditions_weeks (df):
@@ -202,6 +205,7 @@ def conditions_weeks (df):
 
         return val
 
+    df = df.copy()
     df['week_campaign']=df.apply(f, axis=1)
     return[df]
 
@@ -211,10 +215,12 @@ def df_no_yield_outliers(df, yield_low_threshold, yield_high_threshold, min_vi, 
     # range outlier criteria
     import numpy as np
     # create emtpy df
+    df=df.copy()
     df["yield_type"] = ""
 
     df["yield_type"] = np.where(df['Yield'] <= yield_low_threshold, \
-                                "low yield", df['yield_type']).copy()
+                                "low yield", df['yield_type'])
+
     df["yield_type"] = np.where(df['Yield'] > yield_high_threshold, \
                                 "high_yield", df['yield_type'])
 
@@ -260,7 +266,7 @@ def fill_gaps(metrics_df, periodicity):
 
     # fill_mean is the column with the filled values
     metrics_df = metrics_df.assign(fill_mean=metrics_df.period_median.fillna(metrics_df.period_median. \
-                                                                             rolling(11, min_periods=1, ).mean()))
+                                                                             rolling(11, min_periods=1, ).mean())).copy()
     #min_periods: Minimum number of observations in window required to have a value
     return[metrics_df]
 
@@ -276,16 +282,31 @@ def std_approach_thresholds(metrics_df):
 
     return [metrics_df]
 
-def plot_pattern_thresholds (metrics_df,vi):
+
+def iqr_approach_thresholds(metrics_df):
+
+    ## As we dont have data daily we will fill the gaps for Q1 and Q3
+    metrics_df['Q1'].fillna(value=metrics_df['Q1'].rolling(10, min_periods=1, ).mean(), inplace=True)
+    metrics_df['Q3'].fillna(value=metrics_df['Q3'].rolling(10, min_periods=1, ).mean(), inplace=True)
+
+    metrics_df['up_threshold'] = metrics_df['Q3']
+    metrics_df['low_threshold'] = metrics_df['Q1']
+    metrics_df['IQR'] = metrics_df['Q3']-metrics_df['Q1']
+    metrics_df['top_threshold'] =  metrics_df['Q3'] +1.5*metrics_df['IQR']
+    metrics_df['bottom_threshold']=metrics_df['Q1']-1.5*metrics_df['IQR']
+    return [metrics_df]
+
+def plot_pattern_thresholds (metrics_df,vi, method, plot_folder):
 
 
     #def plot_pattern_thresholds(x, y_median, y_median_filter, extreme_thres1, extreme_thres2, normal_thres1, normal_thres2, df_current):
     import matplotlib.pyplot as plt
     import seaborn as sns
     metrics_df.reset_index(inplace=True)
+    final_exportplot = plot_folder + '/pattern_' + str(method) + '_'+vi+'.png'
 
     plt.figure(figsize=(15, 6))
-    plt.title(vi+ " change over time")
+    plt.title(vi+ " temporal pattern")
     plt.plot(metrics_df.age,metrics_df.period_median_filter, color='blue',label="Baseline")
 
     #sns.scatterplot(x, y_median, data=weekly_stats_df, s=35)
@@ -293,10 +314,11 @@ def plot_pattern_thresholds (metrics_df,vi):
     plt.plot(metrics_df.age, metrics_df.low_threshold, color='green')
     plt.plot(metrics_df.age,metrics_df.top_threshold, color='orange')
     plt.plot(metrics_df.age,metrics_df.bottom_threshold, color='orange')
-    plt.xlabel('Age', fontsize=14)
+    plt.xlabel('Age (days)', fontsize=14)
     plt.ylabel('Median NDVI/plot', fontsize=14)
     plt.legend()
     ### TO plot points
     #plt.scatter(df_current['week_campaign'], df_current['mean_vi'], data=df_current, s=35)
     plt.show()
+    plt.savefig(final_exportplot, dpi=200)
 
