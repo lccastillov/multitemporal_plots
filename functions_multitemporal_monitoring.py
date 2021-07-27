@@ -334,57 +334,51 @@ def plot_pattern_sample_points (metrics_df,vi, plot_folder,df_sample_points):
     merged_df["category"]=" "
     merged_df["category"] = np.where((merged_df['mean_vi'] >= merged_df['low_threshold']) & \
                                   (merged_df['mean_vi'] <= merged_df['up_threshold']) , \
-                                "green", merged_df["category"])
-    merged_df["category"] = np.where(((merged_df['mean_vi'] > merged_df['up_threshold']) & \
+                                "Green", merged_df["category"])
+    merged_df["category"] = np.where(((merged_df['mean_vi'] >= merged_df['up_threshold']) & \
                                   (merged_df['mean_vi'] <= merged_df['top_threshold'])) | \
-                                  ((merged_df['mean_vi'] < merged_df['low_threshold']) & \
+                                  ((merged_df['mean_vi'] <= merged_df['low_threshold']) & \
                                   (merged_df['mean_vi'] >= merged_df['bottom_threshold'])),\
-                                   "orange", merged_df["category"])
+                                   "Orange", merged_df["category"])
     merged_df["category"] = np.where((merged_df['mean_vi'] > merged_df['top_threshold']) | \
                                   (merged_df['mean_vi'] < merged_df['bottom_threshold']) , \
-                                   "red", merged_df["category"])
+                                   "Red", merged_df["category"])
 
-    merged_df.category[  merged_df.category == " "] = "Out of pattern's ages"
+    merged_df.category[merged_df.category == " "] = "Out of pattern's ages"
 
 
-    print("line 331",merged_df.columns)
-    print("line 332", merged_df.head(40))
+
     #def plot_pattern_thresholds(x, y_median, y_median_filter, extreme_thres1, extreme_thres2, normal_thres1, normal_thres2, df_current):
 
     metrics_df.reset_index(inplace=True)
     final_exportplot = plot_folder + '/pattern_' +vi+'.png'
 
-    plt.figure(figsize=(15, 6))
-    plt.title(vi+ " temporal pattern")
-    plt.plot(metrics_df.age,metrics_df.period_median_filter, color='blue',label="Baseline")
-
-    #sns.scatterplot(x, y_median, data=weekly_stats_df, s=35)
-    plt.plot(metrics_df.age, metrics_df.up_threshold, color='green',label="Threshold 1")
-    plt.plot(metrics_df.age, metrics_df.low_threshold, color='green')
-    plt.plot(metrics_df.age,metrics_df.top_threshold, color='orange',label="Threshold 2")
-    plt.plot(metrics_df.age,metrics_df.bottom_threshold, color='orange')
-    handles, labels = plt.get_legend_handles_labels()
-    plt.legend(handles=handles[1:], labels=labels[1:])
-
+    fig, ax = plt.subplots(figsize=(15, 6))
+    ax.set_title(vi+ " temporal pattern for Asparagus")
     # Plot sample points
 
     ## Create Palette
-    palette = {"orange": "tab:orange",
-               "green": "tab:green",
-               "red": "tab:red",
+    palette = {"Orange": "tab:orange",
+               "Green": "tab:green",
+               "Red": "tab:red",
                "Out of pattern's ages":"tab:grey"}
+    scatter = sns.scatterplot(data=merged_df, x="age", y="mean_vi", hue="category", palette=palette, ax=ax)
+    line1,=ax.plot(metrics_df.age,metrics_df.period_median_filter, color='blue',label="Baseline")
 
-    sns.scatterplot(data=merged_df, x="age", y="mean_vi", hue="category", palette=palette)
-
+    line2,=ax.plot(metrics_df.age, metrics_df.up_threshold, color='green',label="Threshold 1")
+    line3,=ax.plot(metrics_df.age, metrics_df.low_threshold, color='green')
+    line4,=ax.plot(metrics_df.age,metrics_df.top_threshold, color='orange',label="Threshold 2")
+    line5,=ax.plot(metrics_df.age,metrics_df.bottom_threshold, color='orange')
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles=handles[1:], labels=labels[1:])
+    legend1= ax.legend(handles=handles[:3], labels=labels[:3], title="Thresholds")
+    legend2 = ax.legend(handles=handles[4:8], labels=labels[4:8], title="Sample points")
+    ax.add_artist(legend1)
+    ax.add_artist(legend2)
 
 
     plt.xlabel('Age (days)', fontsize=14)
     plt.ylabel('Median NDVI/plot', fontsize=14)
-    plt.legend()
-    ### TO plot points
-    #plt.scatter(df_current['week_campaign'], df_current['mean_vi'], data=df_current, s=35)
+
     plt.show()
     plt.savefig(final_exportplot, dpi=200)
-
-
-
