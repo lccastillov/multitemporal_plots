@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cfc51795-a38b-4b5f-96cc-807eaa787afe" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions_multitemporal_monitoring.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions_multitemporal_monitoring.py" afterDir="false" />
-    </list>
+    <list default="true" id="cfc51795-a38b-4b5f-96cc-807eaa787afe" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +89,14 @@
       <option name="project" value="LOCAL" />
       <updated>1627392668152</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Adding sample points was included">
+      <created>1627408307049</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1627408307049</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -115,6 +119,7 @@
     <MESSAGE value="Presents temporal patterns using two thresholding methods:&#10;1. Standard deviation&#10;2. Interquartile range" />
     <MESSAGE value="Removed the interquartile range approach as it did not worked well. The Q1 and Q3 cross the smoothed baseline" />
     <MESSAGE value="Solution using plt." />
-    <option name="LAST_COMMIT_MESSAGE" value="Solution using plt." />
+    <MESSAGE value="Adding sample points was included" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding sample points was included" />
   </component>
 </project>
