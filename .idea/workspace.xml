@@ -79,7 +79,14 @@
       <option name="project" value="LOCAL" />
       <updated>1627320924444</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Removed the interquartile range approach as it did not worked well. The Q1 and Q3 cross the smoothed baseline">
+      <created>1627321491974</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1627321491974</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -100,6 +107,7 @@
     <MESSAGE value="Filled gaps." />
     <MESSAGE value="Filled gaps+savitzky golay. Missing to find a defaults std when no std available" />
     <MESSAGE value="Presents temporal patterns using two thresholding methods:&#10;1. Standard deviation&#10;2. Interquartile range" />
-    <option name="LAST_COMMIT_MESSAGE" value="Presents temporal patterns using two thresholding methods:&#10;1. Standard deviation&#10;2. Interquartile range" />
+    <MESSAGE value="Removed the interquartile range approach as it did not worked well. The Q1 and Q3 cross the smoothed baseline" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed the interquartile range approach as it did not worked well. The Q1 and Q3 cross the smoothed baseline" />
   </component>
 </project>

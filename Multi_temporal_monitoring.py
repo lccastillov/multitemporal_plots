@@ -70,6 +70,7 @@ metrics_day_columns_df = [ 'age', 'vi', 'count', 'period_mean', 'period_median',
 
 # Dataframe to store metrics
 daily_stats_df_total = pd.DataFrame( columns=metrics_day_columns_df)
+sample_points_csv=m_root+'/Danper_ES/input_files/NDVI_8_values.csv'
 
 ## ---------------------------
 
@@ -172,8 +173,11 @@ for vi in s2_vi_list:
         np.where(daily_stats_df_total['count'] < 5, np.nan, daily_stats_df_total['period_median'])
 
 
-    ## Fill gaps
+    ## Fill NDVI values for days without enough data
     metrics_df,=fill_gaps(metrics_df=daily_stats_df_total, periodicity='daily')
+
+    ## Fill the gaps for standard deviations for days without enough data
+    metrics_df['std'].fillna(value=metrics_df['std'].rolling(10, min_periods=1, ).mean(), inplace=True)
 
 
     ### Filter data using savitzky-golay
@@ -182,21 +186,31 @@ for vi in s2_vi_list:
     period_median_filter = scipy.signal.savgol_filter(metrics_df.fill_mean,7, 3)  # window size 3, polynomial order 2
     metrics_df['period_median_filter']=period_median_filter
 
-    ## Fill the gaps for standard deviations
-    metrics_df['std'].fillna(value=metrics_df['std'].rolling(10, min_periods=1, ).mean(), inplace=True)
 
-    #Get thresholds using sandard deviations critera
+
+    #Retrieve thresholds using sandard deviations critera and appending them to the metrics_df dataframe
     metrics_df,=std_approach_thresholds(metrics_df).copy()
 
+    ### Store dataframe in csv file
+    #metrics_df.to_csv(plot_folder+'/metrics_df.csv')
 
-    #print columns
-    print("columns",metrics_df.columns)
-    #print("mcolumns",metrics_df[['period_median','std','low_threshold','period_median_filter','up_threshold']].head(30))
-    ### Plot
-    metrics_df.to_csv(plot_folder+'/metrics_df.csv')
+    plot_type=input("To plot the patterns + new points type 'yes', to plot the patterns alone type 'no' ")
+    if plot_type=='yes':
+        df_sample_points = pd.read_csv(sample_points_csv)
+        plot_pattern_sample_points(metrics_df, vi, plot_folder, df_sample_points)
 
-    ## Plot the mean values daily
-    plot_pattern_thresholds(metrics_df, vi, plot_folder)
+    elif plot_type=='no':
+        ## Plot the mean values daily
+        plot_pattern_thresholds(metrics_df, vi, plot_folder)
+    else:
+        print("You entered a wrong value")
+
+    ## Adding new points
+
+
+
+
+
 
 
 
