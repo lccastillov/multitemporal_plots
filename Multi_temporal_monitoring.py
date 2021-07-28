@@ -70,7 +70,7 @@ metrics_day_columns_df = [ 'age', 'vi', 'count', 'period_mean', 'period_median',
 
 # Dataframe to store metrics
 daily_stats_df_total = pd.DataFrame( columns=metrics_day_columns_df)
-sample_points_csv=m_root+'/Danper_ES/input_files/NDVI_8_values.csv'
+sample_points_csv=m_root+'/Danper_ES/input_files/NDVI_8_sample_values.csv'
 
 ## ---------------------------
 
@@ -115,9 +115,11 @@ yield_high_threshold=yield_median+0.5*yield_std
 yield_high_threshold=yield_median-0.5*yield_std
 
 
+
+
+
 ###################
 
-max_day = 140
 
 # Maximum week to retrieve statistics of VIs:
 # Identified as the latest week in which all plots have not been harvested yet
@@ -155,7 +157,7 @@ for vi in s2_vi_list:
     ############
     periodicity = 'daily'
     for day in days_list:
-        # delete  outliers per week based on the mean VI values per plot (i.e. mean vi)
+        # delete  outliers per day based on the mean VI values per plot (i.e. mean vi)
         column_name = 'mean_vi'
         indexNames, = delete_outliers_iqr_day(df, column_name, day)
         df.drop(indexNames, inplace=True)

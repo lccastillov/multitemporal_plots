@@ -227,7 +227,7 @@ def df_no_yield_outliers(df, yield_low_threshold, yield_high_threshold, min_vi, 
     # Only high yields
     df = df[df['yield_type'] == 'high_yield'].copy()
 
-    # Delete weird values (lower then NDvi 0.3 in weeks highern than 21)
+    # Delete weird values (lower then NDvi 0.3 in weeks highern than 20)
     # this max week refers to the maximum expected week before harvesing
 
     drop_outliers = df[(df['week_campaign'] >= max_week_campaign_duration) & (df['mean_vi'] < min_vi)]
@@ -252,7 +252,7 @@ def delete_outliers_iqr_day (df, column_name, day):
     return [indexNames]
 
 def fill_gaps(metrics_df, periodicity):
-    #Fills gaps using the mean
+    #Fills gaps of daily VI values
     if periodicity == "weekly":
         metrics_df = metrics_df.set_index('week_campaign').copy()
     elif periodicity == "daily":
@@ -272,7 +272,7 @@ def fill_gaps(metrics_df, periodicity):
 
 
 def std_approach_thresholds(metrics_df):
-
+    # This function estimates the thresholds using the standar deviations approach
     metrics_df['up_threshold'] = metrics_df['period_median_filter'] + metrics_df['std']
     metrics_df['low_threshold'] = metrics_df['period_median_filter'] - metrics_df['std']
 
@@ -284,6 +284,7 @@ def std_approach_thresholds(metrics_df):
 
 
 def iqr_approach_thresholds(metrics_df):
+    #This function estimates the thresholds using the IQR approach (Not considered in the main script)
 
     ## As we dont have data daily we will fill the gaps for Q1 and Q3
     metrics_df['Q1'].fillna(value=metrics_df['Q1'].rolling(10, min_periods=1, ).mean(), inplace=True)
@@ -297,6 +298,7 @@ def iqr_approach_thresholds(metrics_df):
     return [metrics_df]
 
 def plot_pattern_thresholds (metrics_df,vi, plot_folder):
+    #This function plots the temporal patterns created
 
 
     #def plot_pattern_thresholds(x, y_median, y_median_filter, extreme_thres1, extreme_thres2, normal_thres1, normal_thres2, df_current):
@@ -310,9 +312,9 @@ def plot_pattern_thresholds (metrics_df,vi, plot_folder):
     plt.plot(metrics_df.age,metrics_df.period_median_filter, color='blue',label="Baseline")
 
     #sns.scatterplot(x, y_median, data=weekly_stats_df, s=35)
-    plt.plot(metrics_df.age, metrics_df.up_threshold, color='green')
+    plt.plot(metrics_df.age, metrics_df.up_threshold, color='green', label="Threshold 1")
     plt.plot(metrics_df.age, metrics_df.low_threshold, color='green')
-    plt.plot(metrics_df.age,metrics_df.top_threshold, color='orange')
+    plt.plot(metrics_df.age,metrics_df.top_threshold, color='orange',label="Threshold 2")
     plt.plot(metrics_df.age,metrics_df.bottom_threshold, color='orange')
     plt.xlabel('Age (days)', fontsize=14)
     plt.ylabel('Median NDVI/plot', fontsize=14)
@@ -324,6 +326,7 @@ def plot_pattern_thresholds (metrics_df,vi, plot_folder):
 
 
 def plot_pattern_sample_points (metrics_df,vi, plot_folder,df_sample_points):
+    #This function plots the temporal patterns created and sample points to be contrasted
     import matplotlib.pyplot as plt
     import seaborn as sns
     # Merge the dataframes into a new one
@@ -351,7 +354,7 @@ def plot_pattern_sample_points (metrics_df,vi, plot_folder,df_sample_points):
     #def plot_pattern_thresholds(x, y_median, y_median_filter, extreme_thres1, extreme_thres2, normal_thres1, normal_thres2, df_current):
 
     metrics_df.reset_index(inplace=True)
-    final_exportplot = plot_folder + '/pattern_' +vi+'.png'
+    final_exportplot = plot_folder + '/pattern_samples_' +vi+'.png'
 
     fig, ax = plt.subplots(figsize=(15, 6))
     ax.set_title(vi+ " temporal pattern for Asparagus")
